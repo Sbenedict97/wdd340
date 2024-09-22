@@ -24,7 +24,7 @@ app.set("layout", "./layouts/layout") //not at views root
  * Routes
  *************************/
 
-app.use(static)
+app.use(express.static('public'))
 
 /* ***********************
  * Index Route
@@ -45,5 +45,5 @@ const host = process.env.HOST
  * Log statement to confirm server operation
  *************************/
 app.listen(port, () => {
-  console.log(`app listening on ${host}:${port}`)
+  console.log(`app listening on http://${host}:${port}`)
 })

@@ -10,7 +10,6 @@ const expressLayouts = require("express-ejs-layouts")
 const env = require("dotenv").config()
 const path = require("path"); 
 const app = express()
-const static = require("./routes/static")
 
 /* ***********************
  * View Engine and Templates
@@ -32,12 +31,10 @@ app.use(express.static(path.join(__dirname, "public")));
  *************************/
 
 app.get("/", function (req, res) {
-  res.render("index", {
-    title: "Home",
-  });
-});
+  res.render("index", { title: "Home",})
+})
 /* ***********************
- * Local Server Information
+ * Local Server Information 
  * Values from .env (environment) file
  *************************/
 const port = process.env.PORT

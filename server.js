@@ -8,6 +8,7 @@
 const express = require("express")
 const expressLayouts = require("express-ejs-layouts")
 const env = require("dotenv").config()
+const path = require("path"); 
 const app = express()
 const static = require("./routes/static")
 
@@ -21,19 +22,20 @@ app.set("layout", "./layouts/layout") //not at views root
 
 
 /* ***********************
+ * Serve Static Files
+ *************************/
+
+app.use(express.static(path.join(__dirname, "public")));
+
+/* ***********************
  * Routes
  *************************/
 
-app.use(express.static('public'))
-
-/* ***********************
- * Index Route
- *************************/
 app.get("/", function (req, res) {
   res.render("index", {
-    title: "Home"
-  })
-})
+    title: "Home",
+  });
+});
 /* ***********************
  * Local Server Information
  * Values from .env (environment) file

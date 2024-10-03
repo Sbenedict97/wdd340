@@ -36,7 +36,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/", utilities.handleErrors(baseController.buildHome))
 
 // Inventory routes
-app.use("/inv", inventoryRoute)
+app.use("/routes", inventoryRoute)
 
 // File Not Found Route - must be last route in list
 app.use(async (req, res, next) => {

@@ -115,3 +115,56 @@ footer {
     width: 200px;
   }
 }
+
+/* Styling for the title */
+h1 {
+  font-size: 2.5em;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin: 20px 0;
+}
+
+/* Style for grid layout */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-gap: 20px;
+  padding: 20px;
+}
+
+.grid-item {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.grid-item:hover {
+  background-color: #f1f1f1;
+  transform: translateY(-3px);
+  transition: all 0.3s ease;
+}
+
+/* Add some padding for the main container */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #fafafa;
+  margin: 0;
+  padding: 0;
+}
+
+/* Flash messages styling */
+.message {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px;
+  margin: 20px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.message.error {
+  background-color: #f44336;
+}

@@ -5,6 +5,9 @@
 /* ***********************
  * Require Statements
  *************************/
+
+const session = require("express-session")
+const pool = require('./database/')
 const express = require("express")
 const expressLayouts = require("express-ejs-layouts")
 const env = require("dotenv").config()
@@ -12,6 +15,20 @@ const path = require("path");
 const app = express()
 const utilities = require("./utilities/")
 const baseController = require("./controllers/baseController")
+
+/* ***********************
+ * Middleware
+ * ************************/
+app.use(session({
+  store: new (require('connect-pg-simple')(session))({
+    createTableIfMissing: true,
+    pool,
+  }),
+  secret: process.env.SESSION_SECRET,
+  resave: true,
+  saveUninitialized: true,
+  name: 'sessionId',
+}))
 
 /* ***********************
  * View Engine and Templates

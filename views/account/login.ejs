@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+</head>
+<body>
+    <h1><%= title %></h1>
+
+    <% if (typeof flash !== 'undefined') { %>
+        <div class="flash-message">
+            <%= flash.message %>
+        </div>
+    <% } %>
+
+    <form action="/account/login" method="POST">
+        <label for="account_email">Email:</label>
+        <input type="email" name="account_email" id="account_email" required>
+
+        <label for="account_password">Password:</label>
+        <input type="password" name="account_password" id="account_password" required>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <p>Don't have an account? <a href="/account/register">Register here</a>.</p>
+</body>
+</html>

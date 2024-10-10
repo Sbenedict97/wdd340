@@ -168,3 +168,51 @@ body {
 .message.error {
   background-color: #f44336;
 }
+form {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+}
+
+form label {
+  display: block;
+  margin-top: 1rem;
+}
+
+form input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+form button {
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #0056b3;
+}
+
+/* Invalid input */
+input:required:invalid {
+  background-image: url('/images/invalid.png');
+  background-position: right top;
+  background-repeat: no-repeat;
+  border: 2px solid red;
+}
+
+/* Valid input */
+input:required:valid {
+  background-image: url('/images/valid.png');
+  background-position: right top;
+  background-repeat: no-repeat;
+  border: 2px solid green;
+}

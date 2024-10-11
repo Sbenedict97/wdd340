@@ -9,6 +9,16 @@ router.get('/login', accountController.buildLogin);
 // Route to build registration view
 router.get("/register", utilities.handleErrors(accountController.buildRegister));
 
+router.post('/register', utilities.handleErrors(accountController.registerAccount))
+
+// Process the login attempt
+router.post(
+  "/login",
+  (req, res) => {
+    res.status(200).send('login process')
+  }
+)
+
 // Error handling
 router.use((err, req, res, next) => {
   console.error(err.stack);

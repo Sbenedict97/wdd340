@@ -4,9 +4,9 @@ const router = new express.Router();
 const inventoryController = require('../controllers/invController');
 
 // Route to build inventory classification view
-router.get("/type/:classificationId", invController.buildByClassificationId);
+router.get("/type/:classificationId", inventoryController.buildByClassificationId);
 
-// Route to specific details
+// Route to specific details  
 router.get('/vehicle/:id', inventoryController.getVehicleDetail);
 
 // Error trigger

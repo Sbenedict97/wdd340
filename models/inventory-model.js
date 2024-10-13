@@ -39,4 +39,18 @@ async function getVehicleById(vehicleId) {
     throw new Error('Database query failed');
   }
 }
-module.exports = { getVehicleById, ...otherFunctions };
+
+const db = require('../db/connection');
+
+exports.addInventory = async (inventoryData) => {
+    const { inv_make, inv_model, inv_price, classification_id } = inventoryData;
+    const sql = `INSERT INTO inventory (inv_make, inv_model, inv_price, classification_id) VALUES ($1, $2, $3, $4)`;
+    await db.query(sql, [inv_make, inv_model, inv_price, classification_id]);
+};
+
+exports.getClassifications = async () => {
+  const sql = 'SELECT classification_id, classification_name FROM classification ORDER BY classification_name ASC';
+  return db.query(sql);
+};
+
+module.exports = { getClassifications, getInventoryByClassificationId, getVehicleById };

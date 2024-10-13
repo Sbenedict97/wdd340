@@ -83,4 +83,17 @@ function buildVehicleView(vehicle) {
   `;
 }
 
-module.exports = { buildVehicleView, ...otherFunctions };
+const invModel = require('../models/inventory-model');
+
+exports.buildClassificationList = async (classification_id = null) => {
+    const data = await invModel.getClassifications();
+    let classificationList = '<select name="classification_id" id="classificationList" required>';
+    classificationList += "<option value=''>Choose a Classification</option>";
+    data.rows.forEach((row) => {
+        classificationList += `<option value="${row.classification_id}"${classification_id && row.classification_id == classification_id ? ' selected' : ''}>${row.classification_name}</option>`;
+    });
+    classificationList += "</select>";
+    return classificationList;
+};
+
+module.exports = { buildVehicleView, Util };

@@ -16,8 +16,9 @@ const utilities = require("./utilities/");
 const baseController = require("./controllers/baseController");
 const inventoryRoute = require('./routes/inventoryRoute'); 
 const accountRoute = require('./routes/accountRoute'); 
-const bodyParser = require("body-parser")
+const bodyParser = require("body-parser");
 const session = require("express-session");
+
 /* ***********************
  * Middleware
  *************************/
@@ -28,8 +29,8 @@ app.use(session({
   name: 'sessionId',
 }));
 
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Express Messages Middleware //
 app.use(require('connect-flash')());
@@ -41,7 +42,6 @@ app.use(function(req, res, next){
 /* ***********************
  * View Engine and Templates
  *************************/
-
 app.set("view engine", "ejs");
 app.use(expressLayouts);
 app.set("layout", "./layouts/layout"); // Not at views root
@@ -52,13 +52,24 @@ app.set("layout", "./layouts/layout"); // Not at views root
 app.use(express.static(path.join(__dirname, "public")));
 
 /* ***********************
+ * Database Connection Check (Optional)
+ *************************/
+pool.query('SELECT 1', (err) => {
+  if (err) {
+    console.error('Database connection failed:', err);
+  } else {
+    console.log('Database connected successfully');
+  }
+});
+
+/* ***********************
  * Routes
  *************************/
 // Index route
 app.get("/", utilities.handleErrors(baseController.buildHome));
 
 // Inventory routes
-app.use("/routes", inventoryRoute);
+app.use("/inventory", inventoryRoute);  // Adjusted the route to "/inventory"
 
 // Account routes
 app.use("/account", accountRoute); // Added account route
@@ -77,15 +88,17 @@ const host = process.env.HOST || 'localhost';
 /* ***********************
  * Log statement 
  *************************/
-
-app.listen(port, () => {
-  console.log(`Server running on http://${host}:${port}`);
+app.listen(port, host, (err) => {
+  if (err) {
+    console.error('Failed to start server:', err);
+  } else {
+    console.log(`Server running on http://${host}:${port}`);
+  }
 });
 
 /* ***********************
  * Express Error Handler
  *************************/
-
 app.use(async (err, req, res, next) => {
   let nav = await utilities.getNav();
   console.error(`Error at: "${req.originalUrl}": ${err.message}`);

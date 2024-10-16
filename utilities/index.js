@@ -83,8 +83,6 @@ function buildVehicleView(vehicle) {
   `;
 }
 
-const invModel = require('../models/inventory-model');
-
 exports.buildClassificationList = async (classification_id = null) => {
     const data = await invModel.getClassifications();
     let classificationList = '<select name="classification_id" id="classificationList" required>';

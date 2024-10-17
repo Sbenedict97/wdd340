@@ -40,7 +40,7 @@ async function getVehicleById(vehicleId) {
   }
 }
 
-const db = require('../db/connection');
+const db = require('../database/index');
 
 exports.addInventory = async (inventoryData) => {
     const { inv_make, inv_model, inv_price, classification_id } = inventoryData;

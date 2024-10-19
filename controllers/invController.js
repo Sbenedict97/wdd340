@@ -1,116 +1,153 @@
-// controllers/inventoryController.js
+const invModel = require("../models/inventory-model")
+const utilities = require("../utilities/")
 
-const invModel = require('../models/inventory-model');
-const Util = require('../utilities/index');
+const invCont = {}
 
-// 'Add Inventory' form with classification list
-exports.addInventoryView = async (req, res) => {
-  try {
-    const classificationList = await Util.buildClassificationList();
-    res.render('inventory/add-inventory', { classificationList });
-  } catch (error) {
-    console.error('Error loading classification list:', error);
-    req.flash('message', 'Error loading classifications.');
-    res.redirect('/inv'); // Redirect to inventory page on error
-  }
-};
+/* *******************************************
+ * Build inventory for classification view
+ * ******************************************* */
+invCont.buildByClassificationId = async function (req, res, next) {
+    const classification_id = req.params.classificationId
+    const data = await invModel.getInventoryByClassificationId(classification_id)
+    const grid = await utilities.buildClassificationGrid(data)
+    let nav = await utilities.getNav()
+    const className = data[0].classification_name
+    res.render("./inventory/classification", {
+        title: `${className} vehicles`,
+        nav,
+        grid,
+    })
+}
 
-// Handle POST to add inventory
-exports.addInventory = async (req, res) => {
-  const { inv_make, inv_model, inv_price, classification_id } = req.body;
+/* *******************************************
+ * Build vehicle details view
+ * ******************************************* */
+invCont.buildVehicleDetailsView = async function(req, res, next) {
+    const inventoryId = req.params.inventoryId
+    const data = await invModel.getInventoryItemByInvId(inventoryId)
+    const details = await utilities.buildVehicleDetailsView(data)
+    let nav = await utilities.getNav()
+    const vehicleYear = data.inv_year
+    const vehicleMake = data.inv_make
+    const vehicleModel = data.inv_model
+    res.render("./inventory/details", {
+        title: `${data.inv_year} ${vehicleMake} ${vehicleModel}`,
+        nav,
+        details
+    })
+}
 
-  // Validate form inputs
-  if (!inv_make || !inv_model || !inv_price || !classification_id) {
-    req.flash('message', 'All fields are required.');
-    return res.redirect('/inv/inventory/new'); // Redirect back to form if validation fails
-  }
+/* *******************************************
+ * Build add classification view
+ * ******************************************* */
+invCont.buildManagementView = async function(req, res, next) {
+    let nav = await utilities.getNav()
+    res.render("./inventory/management", {
+        title: 'Vehicle Management',
+        nav,
+    })
+}
 
-  try {
-    // Add the new inventory item
-    await invModel.addInventory(req.body);
-    req.flash('message', 'Inventory item added successfully!');
-    res.redirect('/inv'); // Redirect to inventory management on success
-  } catch (error) {
-    console.error('Error adding inventory:', error);
-    req.flash('message', 'Error adding inventory item.');
-    res.redirect('/inv/inventory/new'); // Redirect back to form on error
-  }
-};
+/* *******************************************
+ * Build classification view
+ * ******************************************* */
+invCont.buildAddClassificationView = async function(req, res, next) {
+    let nav = await utilities.getNav()
+    res.render("./inventory/add-classification", {
+        title: 'Add New Classification',
+        nav,
+        errors: null,
+    })
+}
 
-// Render 'Manage Inventory' page
-exports.manageInventoryView = async (req, res) => {
-  try {
-    const inventoryList = await invModel.getInventory();
-    const classificationList = await Util.buildClassificationList(); // For filter dropdown
-    res.render('inventory/management', { inventoryList, classificationList });
-  } catch (error) {
-    console.error('Error loading inventory:', error);
-    req.flash('message', 'Error loading inventory.');
-    res.redirect('/inv'); // Redirect to inventory page on error
-  }
-};
+/* *******************************************
+ * Build addition inventory view
+ * ******************************************* */
+invCont.buildAddInventoryView = async function(req, res, next) {
+    let nav = await utilities.getNav()
+    let classificationDropDown = await utilities.buildClassificationList()
+    res.render("./inventory/add-inventory", {
+        title: 'Add New Vehicle',
+        nav,
+        classificationDropDown,
+        errors: null,
+    })
+}
 
-// Filtering inventory by classification
-exports.filterInventory = async (req, res) => {
-  const { classification_id } = req.body;
-  try {
-    const inventoryList = await invModel.getInventoryByClassification(classification_id);
-    const classificationList = await Util.buildClassificationList(classification_id);
-    res.render('inventory/management', { inventoryList, classificationList });
-  } catch (error) {
-    console.error('Error filtering inventory:', error);
-    req.flash('message', 'Error filtering inventory.');
-    res.redirect('/inv'); // Redirect on error
-  }
-};
+/* *******************************************
+ * Proccess add new classification
+ * ******************************************* */
+invCont.addNewClassification = async function(req, res) {
+    const { classification_name }  = req.body
 
-// 'Edit Inventory' form for a specific item
-exports.editInventoryView = async (req, res) => {
-  const { inv_id } = req.params;
-  try {
-    const inventoryItem = await invModel.getInventoryById(inv_id);
-    const classificationList = await Util.buildClassificationList(inventoryItem.classification_id);
-    res.render('inventory/edit-inventory', { inventoryItem, classificationList });
-  } catch (error) {
-    console.error('Error loading inventory item:', error);
-    req.flash('message', 'Error loading inventory item.');
-    res.redirect('/inv'); // Redirect on error
-  }
-};
+    const result = await invModel.insertClassificationItem(classification_name)
 
-// Handle edit inventory item
-exports.editInventory = async (req, res) => {
-  const { inv_id } = req.params;
-  const { inv_make, inv_model, inv_price, classification_id } = req.body;
+    if (result) {
+        let nav = await utilities.getNav()
+        req.flash(
+            "notice",
+            `The ${classification_name} classification was successfully added.`
+        )
+        res.status(201).render("./inventory/management", {
+            title: "Vehicle Management",
+            nav,
+        })
+    } else {
+        let nav = await utilities.getNav()
+        req.flash(
+            "notice",
+            "Sorry, adding new classification failed."
+        )
+        res.status(501).render("./inventory/add-classification", {
+            title: "Add New Classification",
+            nav,
+            errors: null,
+        })
+    }
+}
 
-  // Validate form inputs
-  if (!inv_make || !inv_model || !inv_price || !classification_id) {
-    req.flash('message', 'All fields are required.');
-    return res.redirect(`/inv/inventory/${inv_id}/edit`); // Redirect back to form if validation fails
-  }
+/* *******************************************
+ * Proccess add new inventory
+ * ******************************************* */
+invCont.addNewInventory = async function(req, res) {
+    let nav = await utilities.getNav()
+    const { classification_id, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_year, inv_miles, inv_color }  = req.body
 
-  try {
-    // Update the inventory item
-    await invModel.updateInventory(inv_id, req.body);
-    req.flash('message', 'Inventory item updated successfully!');
-    res.redirect('/inv'); // Redirect on success
-  } catch (error) {
-    console.error('Error updating inventory:', error);
-    req.flash('message', 'Error updating inventory item.');
-    res.redirect(`/inv/inventory/${inv_id}/edit`); // Redirect back to form on error
-  }
-};
+    const result = await invModel.insertInventoryItem(
+        classification_id,
+        inv_make,
+        inv_model,
+        inv_description,
+        inv_image,
+        inv_thumbnail,
+        inv_price,
+        inv_year,
+        inv_miles,
+        inv_color
+    )
 
-// Handle remove inventory item
-exports.deleteInventory = async (req, res) => {
-  const { inv_id } = req.params;
-  try {
-    await invModel.deleteInventory(inv_id);
-    req.flash('message', 'Inventory item deleted successfully!');
-    res.redirect('/inv'); // Redirect on success
-  } catch (error) {
-    console.error('Error deleting inventory item:', error);
-    req.flash('message', 'Error deleting inventory item.');
-    res.redirect('/inv'); // Redirect on error
-  }
-};
+    if (result) {
+        req.flash(
+            "notice",
+            `The ${inv_make} ${inv_model} was successfully added.`
+        )
+        res.status(201).render("./inventory/management", {
+            title: "Vehicle Management",
+            nav,
+        })
+    } else {
+        req.flash(
+            "notice",
+            "Sorry, adding new vehicle failed."
+        )
+        let classificationDropDown = await utilities.buildClassificationList(classification_id)
+        res.status(501).render("./inventory/add-inventory", {
+            title: "Add New Vehicle",
+            classificationDropDown,
+            nav,
+            errors: null,
+        })
+    }
+}
+
+module.exports = invCont

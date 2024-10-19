@@ -1,28 +1,31 @@
-const express = require('express');
-const router = express.Router();
-const utilities = require('../utilities/index');
-const accountController = require('../controllers/accountController');
+const express = require("express")
+const router = new express.Router()
+const accountController = require("../controllers/accountController")
+const utilities = require("../utilities/")
+const accountValidate = require("../utilities/account-validation")
 
-// Route for the My Account
-router.get('/login', accountController.buildLogin);
+// Route to build login view
+router.get("/login", utilities.handleErrors(accountController.buildLogin))
 
 // Route to build registration view
-router.get("/register", utilities.handleErrors(accountController.buildRegister));
+router.get("/registration", utilities.handleErrors(accountController.buildRegistration))
 
-router.post('/register', utilities.handleErrors(accountController.registerAccount))
+// Post registration info
+router.post(
+    '/registration',
+    accountValidate.registationRules(),
+    accountValidate.checkRegData,
+    utilities.handleErrors(accountController.registerAccount)
+)
 
 // Process the login attempt
 router.post(
-  "/login",
-  (req, res) => {
-    res.status(200).send('login process')
-  }
+    "/login",
+    accountValidate.loginRules(),
+    accountValidate.checkLoginData,
+    (req, res) => {
+        res.status(200).send('login process')
+    }
 )
 
-// Error handling
-router.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something went wrong!');
-});
-
-module.exports = router;
+module.exports = router

@@ -1,10 +1,13 @@
-const utilities = require("../utilities/")
+const utilities = require('../utilities')
 const baseController = {}
 
-baseController.buildHome = async function(req, res){
-  const nav = await utilities.getNav()
-  res.render("index", {title: "Home", nav})
-  req.flash("notice", "This is a flash message.")
+baseController.buildHome = async function(req, res) {
+    const nav = await utilities.getNav()
+    res.render("index", { title: "Home", nav })
+}
+
+baseController.error500 = async function(req, res) {
+    res.render("index")
 }
 
 module.exports = baseController

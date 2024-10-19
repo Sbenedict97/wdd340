@@ -1,56 +1,111 @@
-const pool = require("../database/")
+const pool = require('../database/')
 
-/* ***************************
- *  Get all classification data
- * ************************** */
-async function getClassifications(){
-  return await pool.query("SELECT * FROM public.classification ORDER BY classification_name")
+/* *****************************
+ * Get all classification data
+ * ***************************** */
+async function getClassifications() {
+  return await pool.query(
+    `SELECT *
+            FROM public.classification
+            ORDER BY classification_name`
+  )
 }
 
-module.exports = {getClassifications}
-
-/* ***************************
- *  Get all inventory items and classification_name by classification_id
- * ************************** */
+/* ******************************
+ * Get all inventory items and classification_name by classification_id
+ * ****************************** */
 async function getInventoryByClassificationId(classification_id) {
   try {
     const data = await pool.query(
-      `SELECT * FROM public.inventory AS i 
-      JOIN public.classification AS c 
-      ON i.classification_id = c.classification_id 
-      WHERE i.classification_id = $1`,
+      `SELECT *
+            FROM public.inventory AS i
+            JOIN public.classification AS c
+            ON i.classification_id = c.classification_id
+            WHERE i.classification_id = $1`,
       [classification_id]
     )
     return data.rows
   } catch (error) {
-    console.error("getclassificationsbyid error " + error)
+    console.error(`getClassificationById error ${error}`)
   }
 }
 
-/* ***************************
- *  Fetch vehicle by ID
- * ************************** */
-async function getVehicleById(vehicleId) {
+/* ******************************
+ * Get an inventory item by inv_id
+ * ****************************** */
+async function getInventoryItemByInvId(inventoryId) {
   try {
-    const data = await pool.query('SELECT * FROM inventory WHERE inventory_id = $1', [vehicleId]);
-    return data.rows[0];
+    const data = await pool.query(
+      `SELECT *
+            FROM public.inventory
+            WHERE inv_id = $1`,
+      [inventoryId]
+    )
+    return data.rows[0]
   } catch (error) {
-    console.error('Error fetching vehicle by ID:', error);
-    throw new Error('Database query failed');
+    console.error(`getInventoryItemByInvId error ${error}`)
   }
 }
 
-const db = require('../database/index');
+/* ******************************
+ * Insert a new classification item
+ * ****************************** */
+async function insertClassificationItem(classification_name) {
+  try {
+    const sql = "INSERT INTO classification (classification_name) VALUES ($1)"
+    return await pool.query(sql, [classification_name])
+  } catch (error) {
+    return error.message
+  }
+}
 
-exports.addInventory = async (inventoryData) => {
-    const { inv_make, inv_model, inv_price, classification_id } = inventoryData;
-    const sql = `INSERT INTO inventory (inv_make, inv_model, inv_price, classification_id) VALUES ($1, $2, $3, $4)`;
-    await db.query(sql, [inv_make, inv_model, inv_price, classification_id]);
-};
+/* ******************************
+ * Insert a new inventory item
+ * ****************************** */
+async function insertInventoryItem(
+  classification_id,
+  inv_make,
+  inv_model,
+  inv_description,
+  inv_image,
+  inv_thumbnail,
+  inv_price,
+  inv_year,
+  inv_miles,
+  inv_color
+) {
+  try {
+    const sql = `
+            INSERT INTO inventory 
+            (
+                classification_id,
+                inv_make,
+                inv_model,
+                inv_description,
+                inv_image,
+                inv_thumbnail,
+                inv_price,
+                inv_year,
+                inv_miles,
+                inv_color
+            ) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        `
+    return await pool.query(sql, [
+      classification_id,
+      inv_make,
+      inv_model,
+      inv_description,
+      inv_image,
+      inv_thumbnail,
+      inv_price,
+      inv_year,
+      inv_miles,
+      inv_color
+    ])
+  } catch (error) {
+    return error.message
+  }
+}
 
-exports.getClassifications = async () => {
-  const sql = 'SELECT classification_id, classification_name FROM classification ORDER BY classification_name ASC';
-  return db.query(sql);
-};
-
-module.exports = { getClassifications, getInventoryByClassificationId, getVehicleById };
+module.exports = { getClassifications, getInventoryByClassificationId, getInventoryItemByInvId, insertClassificationItem, insertInventoryItem }

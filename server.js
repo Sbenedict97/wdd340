@@ -93,12 +93,12 @@ app.use(async (err, req, res, next) => {
  * Local Server Information
  * Values from .env (environment) file
  *************************/
-const port = process.env.PORT
-const host = process.env.HOST
+const port = process.env.PORT || 10000;  // Default port for local development
+const host = process.env.HOST || '0.0.0.0';  // Default host for Render or local
 
 /* ***********************
  * Log statement to confirm server operation
  *************************/
-app.listen(port, () => {
-  console.log(`app listening on ${host}:${port}`)
+app.listen(port, host, () => {
+  console.log(`app listening on ${host}:${port}`);
 })

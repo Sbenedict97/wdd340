@@ -1,26 +1,27 @@
-<!--Heading content-->
+<!-- Heading content -->
 <% if (title) { %>
     <h1><%= title %></h1>
   <% } else {
     res.redirect('/')
     } %>
   
-  <!-- Flash message -->
+  <!-- Flash Message -->
   <%- messages() %>
-
+  
   <!-- display errors -->
   <% if (errors) { %>
-     <ul class="notice">
-  <% errors.array().forEach(error => { %>
+    <ul class="notice">
+   <% errors.array().forEach(error => { %>
      <li><%= error.msg %></li>
   <%  }) %>
-  </ul>
+    </ul>
   <% } %>
   
-  <!-- display new inventory form -->
-  <form class="form addvehicle-form" action="/inv/add-inventory" method="post">
+  <!-- display the contents of the page -->
+  <form id="updateForm" class="form addvehicle-form" action="/inv/update" method="post">
     <p>*All fields are required</p>
     <fieldset class="form--fieldset addvehicle-form--fieldset"> 
+      <!-- CLASSIFICATION DROP DOWN -->
       <label for="classification_id">Classification:</label>
       <select name="classification_id" id="classification_id">
         <%- classSelect %>
@@ -53,7 +54,11 @@
       <label for="inv_color">Color:</label>
       <input type="text" id="inv_color" name="inv_color" placeholder="Vehicle color" value="<%= locals.inv_color %>" pattern="^[A-Za-z]+$" required>
   
-      <input type="submit" name="submit" value="Add Vehicle">
+      <input type="submit" name="submit" value="Update Vehicle" id="updateBtn" disabled>
+      
+      <input type="hidden" name="inv_id"
+      <% if(locals.inv_id) { %> value="<%= locals.inv_id %>"
+      <% } %>>
     </fieldset>
   </form>
-  <script src="../../js/script.js"></script>
+  <script src="../../js/update.js"></script>

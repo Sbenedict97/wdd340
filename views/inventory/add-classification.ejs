@@ -1,23 +1,32 @@
+<!--Heading content-->
 <% if (title) { %>
   <h1><%= title %></h1>
 <% } else {
   res.redirect('/')
-} %>
+  } %>
 
+<!-- Flash Message -->
 <%- messages() %>
 
+<!-- display errors -->
 <% if (errors) { %>
   <ul class="notice">
-      <% errors.array().forEach(error => { %>
-          <li><%= error.msg %></li>
-      <% }) %>
-  </ul>
+<% errors.array().forEach(error => { %>
+  <li><%= error.msg %></li>
+<%  }) %>
+</ul>
 <% } %>
 
-<form action="/inv/add-classification" method="post">
-  <label for="classification_name">Classification Name:</label>
-  <input type="text" name="classification_name" id="classification_name" required pattern="^[A-Za-z]+$" value="<%= locals.classification_name %>">
-  <p>Name must be alphabetic characters only.</p>
-
-  <button type="submit">Add Classification</button>
+<!-- display class form -->
+<form class="form addclass-form" action="/inv/add-classification" method="post">
+  <p>*Field is required</p>
+  <fieldset class="form--fieldset addclass-form--fieldset"> 
+    
+    <label for="classification_name">New Classification:</label>
+    <input type="text" id="classification_name" name="classification_name" placeholder="Enter new classification" value="<%= locals.classification_name %>" pattern="^[a-zA-Z]+$" autofocus required>
+    <p>*Name must be alphabetic characters only, and minimum 3 characters</p>
+    
+    <input type="submit" value="Add Classification">
+  </fieldset>
 </form>
+<script src="../../js/script.js"></script>

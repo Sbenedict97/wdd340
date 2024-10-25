@@ -18,7 +18,7 @@
   <% } %>
   
   <!-- display new inventory form -->
-  <form class="form addvehicle-form" action="/inv/add-inventory" method="post">
+  <form class="form addvehicle-form" action="/views/inventory/add-inventory.ejs" method="post">
     <p>*All fields are required</p>
     <fieldset class="form--fieldset addvehicle-form--fieldset"> 
       <label for="classification_id">Classification:</label>
@@ -56,4 +56,4 @@
       <input type="submit" name="submit" value="Add Vehicle">
     </fieldset>
   </form>
-  <script src="../../js/script.js"></script>
+  <script src="/public/js/script.js"></script>

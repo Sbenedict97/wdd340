@@ -77,12 +77,12 @@ validate.vehicleRules = () => {
     // add image path regex check!
     body("inv_image")
     .trim()
-    .matches(/^\/images\/vehicles\/[a-zA-Z0-9\-_]+\.([a-zA-Z]{3,4})$/)
+    .matches(/^\/public\/\/images\/vehicles\/[a-zA-Z0-9\-_]+\.([a-zA-Z]{3,4})$/)
     .withMessage("Please provide an image path ex.\/images\/vehicles\/example.png"),
 
     body("inv_thumbnail")
     .trim()
-    .matches(/^\/images\/vehicles\/[a-zA-Z0-9\-_]+\.([a-zA-Z]{3,4})$/)
+    .matches(/^\/public\/\/images\/vehicles\/[a-zA-Z0-9\-_]+\.([a-zA-Z]{3,4})$/)
     .withMessage("Please provide an thumbnail image path ex.\/images\/vehicles\/example.png"),
 
     body("inv_price")

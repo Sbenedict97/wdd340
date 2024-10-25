@@ -58,7 +58,6 @@ async function checkExistingClassification(classification_name) {
   }
 }
 
-// INVENTORY MANAGEMENT
 /* ***************************
  *  Add new classification
  * ************************** */

@@ -73,12 +73,6 @@ app.use(async (req, res, next) => {
   next({status: 404, message: 'Sorry, we appear to have lost that page.'})
 })
 
-//below was the direct route for the home. 
-/*
-app.get("/", function(req, res){
-    res.render("index", {title: "Home"})
-})*/ 
-
 /* ***********************
 * Express Error Handler
 * Place after all other middleware
@@ -95,7 +89,6 @@ app.get("/", function(req, res){
 
 /* ***********************
  * Local Server Information
- * Values from .env (environment) file
  *************************/
 const port = process.env.PORT
 const host = process.env.HOST

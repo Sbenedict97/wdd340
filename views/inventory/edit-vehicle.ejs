@@ -40,10 +40,10 @@
       <textarea id="inv_description" name="inv_description" cols="40" rows="5" required><%= locals.inv_description %></textarea>
       
       <label for="inv_image">Image path:</label>
-      <input type="text" id="inv_image" name="inv_image" value="/images/vehicles/no-image.png" pattern="^\/images\/vehicles\/[a-zA-Z0-9\-_]+\.([a-zA-Z]{3,4})$" required>
+      <input type="text" id="inv_image" name="inv_image" value="/public/images/vehicles/no-image.png" pattern="^\/public\/\/images\/vehicles\/[a-zA-Z0-9\-_]+\.([a-zA-Z]{3,4})$" required>
   
       <label for="inv_thumbnail">Thumbnail path:</label>
-      <input type="text" id="inv_thumbnail" name="inv_thumbnail" value="/images/vehicles/no-image-tn.png" pattern="^\/images\/vehicles\/[a-zA-Z0-9\-_]+\.([a-zA-Z]{3,4})$" required>
+      <input type="text" id="inv_thumbnail" name="inv_thumbnail" value="/public/images/vehicles/no-image-tn.png" pattern="^\/public\/\/images\/vehicles\/[a-zA-Z0-9\-_]+\.([a-zA-Z]{3,4})$" required>
       
       <label for="inv_price">Price:</label>
       <input type="text" id="inv_price" name="inv_price" placeholder="Decimal or integer" value="<%= locals.inv_price %>" pattern="^\d+(\.\d{1,2})?$" required>

@@ -19,7 +19,7 @@ const cookieParser = require("cookie-parser")
 
 /* ***********************
  * Middleware
- * ************************/
+ ************************/
 app.use(session({
   store: new (require('connect-pg-simple')(session))({
     createTableIfMissing: true,
@@ -35,7 +35,6 @@ app.use(cookieParser())
 app.use(utilities.checkJWTToken)
 
 app.use(bodyParser.json())
-
 app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 
 // Express Messages Middleware
@@ -66,8 +65,8 @@ app.use("/inv", require("./routes/inventoryRoute"))
 // Account route
 app.use("/account", require("./routes/accountRoute"))
 
-//Inbox Route
-app.use("/inbox", require("./routes/messageRoute"))
+// Inbox Route
+app.use("/inbox", require("./routes/messageRoute")) // Ensure this path is correct
 
 // File Not Found Route - must be last route in list
 app.use(async (req, res, next) => {
@@ -75,10 +74,10 @@ app.use(async (req, res, next) => {
 })
 
 /* ***********************
-* Express Error Handler
-* Place after all other middleware
-*************************/
-*app.use(async (err, req, res, next) => {
+ * Express Error Handler
+ * Place after all other middleware
+ *************************/
+app.use(async (err, req, res, next) => {
   let nav = await utilities.getNav()
   console.error(`Error at: "${req.originalUrl}": ${err.message}`)
   res.render("errors/error", {

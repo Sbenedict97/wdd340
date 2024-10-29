@@ -1,0 +1,27 @@
+<!-- Heading Content -->
+<% if (title) { %>
+    <h1><%= title %></h1>
+  <% } else {
+    res.redirect('/')
+    } %>
+
+<!-- displays error messages -->
+<%- messages() %>
+
+<!-- display errors -->
+<% if (errors) { %>
+  <ul class="notice">
+ <% errors.array().forEach(error => { %>
+   <li><%= error.msg %></li>
+<%  }) %>
+ </ul>
+<% } %>
+
+
+<!-- send new message-->
+<div class="management-links">
+  <a href="./send.ejs">Send Message</a>
+  <a href="./archive.ejs">View archived messages (<%= locals.archivedMessageCount %>)</a>
+</div>
+
+<%- inboxMessages %>

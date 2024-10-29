@@ -69,3 +69,31 @@ WHERE account_id = 2;
 UPDATE public.account
 SET account_type = 'Admin'
 WHERE account_id = 3;
+
+/*Create a message table*/
+CREATE TABLE IF NOT EXISTS public.message (
+    message_id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (INCREMENT 1 START 1 CACHE 1),
+    message_to INTEGER NOT NULL,
+    message_from INTEGER NOT NULL,
+    message_subject VARCHAR NOT NULL,
+    message_body TEXT NOT NULL,
+    message_created TIMESTAMPTZ NOT NULL DEFAULT now(),
+    message_read BOOLEAN NOT NULL DEFAULT false,
+    message_archived BOOLEAN NOT NULL DEFAULT false,
+    CONSTRAINT message_pkey PRIMARY KEY (message_id)
+);
+
+/*Alter Table Relation*/
+
+ALTER TABLE public.message
+ADD COLUMN message_to INTEGER NOT NULL;
+
+/*Realtionship between messages to and account id*/
+ALTER TABLE IF EXISTS public.message
+    ADD CONSTRAINT message_to_fk
+    FOREIGN KEY (message_to)
+    REFERENCES public.account (account_id)
+    MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;

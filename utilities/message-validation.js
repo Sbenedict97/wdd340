@@ -21,7 +21,7 @@ validate.messageRules = () => {
     body("message_body")
     .trim()
     .isLength({ min: 1 })
-    .withMessage("Please include a message"),
+    .withMessage("Please insert a message"),
   ]
 }
 
@@ -35,7 +35,7 @@ validate.checkMessageData = async (req, res, next) => {
   if (!errors.isEmpty()) {
     let nav = await utilities.getNav()
     let accountSelect = await utilities.getAccountSelect(message_to)
-    res.render("../inbox/send", {
+    res.render("inbox/send", {
       errors,
       title: "New Message",
       nav,
@@ -50,7 +50,7 @@ validate.checkMessageData = async (req, res, next) => {
 }
 
 /*  **********************************
- *  Reply Validation Rules
+ *  Add Reply Validation
  * ********************************* */
 validate.replyRules = () => {
   return [
@@ -62,7 +62,7 @@ validate.replyRules = () => {
 }
 
 /* ******************************
- * Check message data
+ * Check message data and return errors
  * ***************************** */
 validate.checkReplyData = async (req, res, next) => {
   const { message_to, message_from, message_subject, message_body, reply_message } = req.body
@@ -71,7 +71,7 @@ validate.checkReplyData = async (req, res, next) => {
   if (!errors.isEmpty()) {
     let nav = await utilities.getNav()
     let fromAccount = await accountModel.getAccountById(message_from)
-    res.render("../inbox/reply", {
+    res.render("inbox/reply", {
       errors,
       title: "Reply",
       nav,

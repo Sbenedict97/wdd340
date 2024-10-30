@@ -4,34 +4,36 @@ const messageController = require("../controllers/messageController");
 const { handleErrors } = require("../utilities");
 const validate = require("../utilities/message-validation");
 
-// Route to build inbox view
-router.get("/", handleErrors(messageController.inboxView));
+// Route to build inbox
+router.get("/", handleErrors(messageController.buildInbox));
 
-// Route to build archived view
-router.get("/archive", handleErrors(messageController.archivedView));
+// Route to build inbox/archive
+router.get("/archive", handleErrors(messageController.buildArchivedMessages));
 
-// Route to build sent view
-router.get("/send", handleErrors(messageController.sendView));
+// Route to build inbox/send
+router.get("/send", handleErrors(messageController.buildSendMessage));
 
-// Route to post a new message
-router.post("/send", validate.messageRules(), validate.checkMessageData, handleErrors(messageController.sendMessage));
+// Route to build inbox/send message
+router.post("/send", validate.messageRules(), validate.checkMessageData,
+  handleErrors(messageController.sendMessage));
 
-// Route to build read message view
-router.get("/read/:message_id", handleErrors(messageController.readMessageView));
+// Route to build inbox/read
+router.get("/view/:message_id", handleErrors(messageController.buildViewMessage));
 
-// Route to build account reply message view
-router.get("/reply/:message_id", handleErrors(messageController.replyMessageView));
+// Route to build account reply message
+router.get("/reply/:message_id", handleErrors(messageController.buildReplyMessage));
 
-// Route to submit a reply
-router.post("/reply", validate.replyRules(), validate.checkReplyData, handleErrors(messageController.replyMessage));
+// Route to build account reply message
+router.post("/reply", validate.replyRules(), validate.checkReplyData,
+  handleErrors(messageController.replyMessage));
 
-// Route to mark a message as read
-router.get("/mark-read/:message_id", handleErrors(messageController.readMessage));
+// Route to set message_read = true
+router.get("/read/:message_id", handleErrors(messageController.readMessage));
 
-// ARCHIVE - Route to archive a message
+// Route to set message_archived = true
 router.get("/archive/:message_id", handleErrors(messageController.archiveMessage));
 
-// DELETE - Route to delete a message
+// Route to delete a message
 router.get("/delete/:message_id", handleErrors(messageController.deleteMessage));
 
-module.exports = router;
+module.exports = router

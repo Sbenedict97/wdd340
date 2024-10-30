@@ -1,5 +1,6 @@
 const invModel = require("../models/inventory-model")
 const accountModel = require("../models/account-model")
+const messageModel = require("../models/messages-model")
 const Util = {}
 const jwt = require("jsonwebtoken")
 require('dotenv').config()
@@ -19,7 +20,7 @@ Util.getNav = async function (req, res, next) {
       row.classification_id +
       '" title="See our inventory of ' +
       row.classification_name +
-      ' Vehicles">' +
+      ' vehicles">' +
       row.classification_name +
       "</a>"
     list += "</li>"
@@ -68,31 +69,22 @@ Util.buildVehicleGrid = async function(data){
   let grid
   let vehicle = data[0]
   if(data){
-    // open single vehicle view wrapper
-    grid = '<div id="vehicle">'
-    // image with alt
+    grid = '<div id="singleVehicleWrapper">'
     grid += '<img src="' + vehicle.inv_image 
     + '" alt="Image of ' + vehicle.inv_year 
     + vehicle.inv_make + vehicle.inv_model + '">'
-    // open unordered list for vehicle data
-    grid += '<ul id="details">'
-    // vehicle subtitle
+    grid += '<ul id="singleVehicleDetails">'
     grid += '<li><h2>' 
     + vehicle.inv_make + ' ' + vehicle.inv_model 
     + ' Details</h2></li>'
-    // formatted vehicle price
     grid += '<li><strong>Price: </strong>$' 
     + new Intl.NumberFormat('en-US').format(vehicle.inv_price) 
     + '</li>'
-    // vehicle description
     grid += '<li><strong>Description: </strong>' + vehicle.inv_description + '</li>'
-    // vehicle miles
     grid += '<li><strong>Miles: </strong>' 
     + new Intl.NumberFormat('en-US').format(vehicle.inv_miles) 
     + '</li>'
-    // close unordered list for vehicle data
     grid += '</ul>'
-    // close single vehicle view wrapper
     grid += '</div>'
 
   } else { 
@@ -109,27 +101,8 @@ Util.buildBrokenPage = function(){
   return broken
 }
 
-/* ****************************************
- * Middleware For Handling Errors
- * Wrap other function in this for 
- * General Error Handling
- **************************************** */
-Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
-
-/* ****************************************
- *  Check Login
- * ************************************ */
-Util.checkLogin = (req, res, next) => {
-  if (res.locals.loggedin) {
-    next()
-  } else {
-    req.flash("notice", "Please log in.")
-    return res.redirect("/account/login")
-  }
-}
-
 /* ************************
- * Constructs the classification HTML select options
+ * Constructs the classification HTML
  ************************** */
 Util.getClassSelect = async function (selectedOption) {
   let data = await invModel.getClassifications()
@@ -145,7 +118,7 @@ Util.getClassSelect = async function (selectedOption) {
 }
 
 /* ************************
- * Constructs the account HTML select options
+ * Constructs the account HTML
  ************************** */
 Util.getAccountSelect = async function (selectedOption) {
   let data = await accountModel.getAccounts()
@@ -161,13 +134,17 @@ Util.getAccountSelect = async function (selectedOption) {
 }
 
 /* ****************************************
-* Middleware to check token validity
+ * Middleware For Handling Errors
+ * General Error Handling
+ **************************************** */
+Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
+
+/* ****************************************
+* Middleware to check token 
 **************************************** */
 Util.checkJWTToken = (req, res, next) => {
-  // if there is a token, verify it
   if (req.cookies.jwt) {
-    // pass verify cookie and secret
-    // call back to check for errors
+
     jwt.verify(
       req.cookies.jwt,
       process.env.ACCESS_TOKEN_SECRET,
@@ -188,7 +165,19 @@ Util.checkJWTToken = (req, res, next) => {
 }
 
 /* ****************************************
- *  Check user authorization, block unauthorized users
+ *  Check Login
+ * ************************************ */
+Util.checkLogin = (req, res, next) => {
+  if (res.locals.loggedin) {
+    next()
+  } else {
+    req.flash("notice", "Please log in.")
+    return res.redirect("/account/login")
+  }
+}
+
+/* ****************************************
+ *  Check user authorization
  * ************************************ */
 Util.checkAuthorization = async (req, res, next) => {
   // auth : 0
@@ -200,7 +189,7 @@ Util.checkAuthorization = async (req, res, next) => {
     account.account_type == "Admin" 
       || account.account_type == "Employee" ? auth = 1 : auth = 0 
   }
-  // !auth ? 404 : next()
+
   if (!auth) {
     req.flash("notice", "Please log in")
     res.redirect("/account/login")
@@ -208,6 +197,68 @@ Util.checkAuthorization = async (req, res, next) => {
   } else {
     next()
   }
+}
+
+/* ************************
+ * Constructs unarchived messages
+ ************************** */
+Util.getAccountMessages = async function (account_id) {
+  let data = await messageModel.getMessagesByAccountId(account_id)
+  let dataTable
+  if (data.rowCount === 0) {
+    dataTable = '<h3>No new messages</h3>'
+  } else {
+    dataTable = '<table id="inboxMessagesDisplay"><thead>'; 
+    dataTable += '<tr><th>Read</th><th>Recieved</th><th>Subject</th><th>From</th></tr>'; 
+    dataTable += '</thead>'; 
+    // Set up the table
+    dataTable += '<tbody>'; 
+    data.rows.forEach((row => { 
+      dataTable += `<tr><td><div class="bubble` 
+        if (row.message_read) {
+          dataTable += ` true"`
+        } else {
+          dataTable += ` false"`
+        }
+      dataTable += `></div></td>`; 
+      dataTable += `<td>${row.message_created.toLocaleString('en-US', 'narrow')}</td>`; 
+      dataTable += `<td><a href='/inbox/view/${row.message_id}' title='Click to view message'>${row.message_subject}</a></td>`;
+      dataTable += `<td>${row.account_firstname} ${row.account_lastname}</td></tr>`;
+    })) 
+    dataTable += '</tbody></table>'; 
+  }
+  return dataTable
+}
+
+/* ************************
+ * Constructs archived messages
+ ************************** */
+Util.getArchivedMessages = async function (account_id) {
+  let data = await messageModel.getArchivedMessagesByAccountId(account_id)
+  let dataTable
+  if (data.rowCount === 0) {
+    dataTable = '<h3>No archived messages</h3>'
+  } else {
+    dataTable = '<table id="inboxMessagesDisplay"><thead>'; 
+    dataTable += '<tr><th>Read</th><th>Recieved</th><th>Subject</th><th>From</th></tr>'; 
+    dataTable += '</thead>'; 
+    // Set up the table
+    dataTable += '<tbody>'; 
+    data.rows.forEach((row => {
+      dataTable += `<tr><td><div class="bubble` 
+        if (row.message_read) {
+          dataTable += ` true"`
+        } else {
+          dataTable += ` false"`
+        }
+      dataTable += `></div></td>`; 
+      dataTable += `<td>${row.message_created.toLocaleString('en-US', 'narrow')}</td>`;
+      dataTable += `<td><a href='/inbox/view/${row.message_id}' title='Click to view message'>${row.message_subject}</a></td>`;
+      dataTable += `<td>${row.account_firstname} ${row.account_lastname}</td></tr>`;
+    })) 
+    dataTable += '</tbody></table>'; 
+  }
+  return dataTable
 }
 
 module.exports = Util
